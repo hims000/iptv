@@ -38,11 +38,20 @@ jobs:
       - name: 运行抓取脚本
         run: python main.py
 
+      - name: 运行后处理脚本
+        run: python process_m3u.py
+
       - name: 提交更新
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
+          # 提交原始抓取文件（保留备份）
+          if [ -f cctv_live_backup.m3u ]; then
+            git add cctv_live_backup.m3u
+          fi
+          
+          # 提交处理后的文件
           if [ -f cctv_live.m3u ]; then
             git add cctv_live.m3u
             if git diff --staged --quiet; then
